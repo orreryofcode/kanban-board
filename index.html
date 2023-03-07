@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Kanban Board</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="heading">
+        <div class="heading__title">
+          <h1>Board Title</h1>
+        </div>
+
+        <div class="heading__button">
+          <button class="heading__button-btn btn">+ Add New Task</button>
+        </div>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+        <div class="sidebar__logo">LOGO</div>
+
+        <div class="sidebar__nav">
+          <p>ALL BOARDS</p>
+          <nav>
+            <ul>
+              <li>Board 1</li>
+              <li>Board 2</li>
+              <li>Board 3</li>
+            </ul>
+          </nav>
+          <button class="sidebar__button-btn btn">+ Create New Board</button>
+        </div>
+      </div>
+
+      <!-- MAIN BOARD -->
+      <div class="task__board">
+        <div class="task__board-track">
+            <div class="task__board-heading">
+                 <h3>TODO</h3>
+            </div> 
+         
+            <div class="task__board-card">
+              <h4>Task 1</h4>
+              <p>task body</p>
+            </div>
+            <div class="task__board-card">
+              <h4>Task 2</h4>
+              <p>task body</p>
+            </div>
+      </div>
+
+
+      <div class="task__board-track">
+        <div class="task__board-heading">
+             <h3>TODO</h3>
+        </div> 
+     
+        <div class="task__board-card">
+          <h4>Task 1</h4>
+          <p>task body</p>
+        </div>
+        <div class="task__board-card">
+          <h4>Task 2</h4>
+          <p>task body</p>
+        </div>
+  </div>
+
+  <div class="task__board-track">
+    <div class="task__board-heading">
+         <h3>TODO</h3>
+    </div> 
+ 
+    <div class="task__board-card">
+      <h4>Task 1</h4>
+      <p>task body</p>
+    </div>
+    <div class="task__board-card">
+      <h4>Task 2</h4>
+      <p>task body</p>
+    </div>
+</div>
+    </div>
+
+
+    <!-- ADD NEW TASK MODAL -->
+    <div class="modal__window-new-bg">
+        <div class="modal__task-new">
+            <div class="modal__task-heading">
+                <h5>Add New Task</h5>
+            </div>
+            
+            <form action="">
+                <div class="form__title">
+                    <label for="title">Title</label>
+                    <input type="text" name="title" id="title" placeholder="e.g. Take coffee break">
+                </div>
+               
+                <div class="form__description">
+                    <label for="description">Description</label>
+                    <textarea name="description" id="description" cols="30" rows="10" placeholder="e.g. It's always good to take a break. This 15 minute break will recharge the batteries a little."></textarea>
+                </div>
+                
+                <div class="form__subtasks">
+                    <label for="subtasks">Subtasks</label>
+                    <input type="text" name="subtasks" id="subtasks" placeholder="e.g. Make coffee">
+                    <button class="subtasks-btn btn">+Add New Subtask</button>
+                </div>
+
+                <div class="form__status">
+                    <label for="status">Status</label>
+                    <select name="status" id="status" title="status">
+                        <option value="Todo">Todo</option>
+                        <option value="Doing">Doing</option>
+                        <option value="Done">Done</option>
+                    </select>
+                </div>
+
+                <button class="subtasks-submit-btn btn" type="submit">Create Task</button>
+            </form>
+        </div>
+    </div>
+    
+
+
+
+        <!-- VIEW TASK MODAL
+        <div class="modal__window-view">
+            
+
+        </div> -->
+        
+        <script src="./index.js"></script>
+  </body>
+</html>
