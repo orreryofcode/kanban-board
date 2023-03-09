@@ -165,7 +165,8 @@ nav > ul > li {
 
 /* MODALS */
 
-.modal__window-new-bg {
+.modal__window-new-bg,
+.modal__window-board {
   display: flex;
   position: absolute;
 

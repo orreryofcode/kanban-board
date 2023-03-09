@@ -15,7 +15,7 @@
         </div>
 
         <div class="heading__button">
-          <button class="heading__button-btn btn">+ Add New Task</button>
+          <button class="heading__button-btn btn" id="newTaskBtn">+ Add New Task</button>
         </div>
       </div>
 
@@ -30,7 +30,7 @@
 
             </ul>
           </nav>
-          <button class="sidebar__button-btn btn">+ Create New Board</button>
+          <button class="sidebar__button-btn btn" id="newBoardBtn">+ Create New Board</button>
         </div>
       </div>
 
@@ -84,6 +84,30 @@
     </div>
 
 
+<!-- ADD NEW BOARD MODAL -->
+
+<div class="modal__window-board hidemodal">
+  <div class="modal__task-new">
+    <h5>NEW BOARD</h5>
+
+    <form action="/" >
+      <div class="form__title">
+        <label for="newboardtitle">Board Title:</label>
+        <input type="text" name="newboardtitle" id="newboardtitle" placeholder="e.g. Take coffee break" value="">
+      </div>
+
+  
+
+
+      <input type="submit" value="Submit" class="subtasks-submit-btn btn" id="newBoardForm" >
+    </form>
+  </div>
+</div>
+
+
+
+
+
     <!-- ADD NEW TASK MODAL -->
     <div class="modal__window-new-bg hidemodal">
         <div class="modal__task-new">
@@ -91,7 +115,7 @@
                 <h5>Add New Task</h5>
             </div>
             
-            <form action="">
+            <form action="/">
                 <div class="form__title">
                     <label for="title">Title</label>
                     <input type="text" name="title" id="title" placeholder="e.g. Take coffee break">
