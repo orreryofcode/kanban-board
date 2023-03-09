@@ -24,7 +24,7 @@
         <div class="sidebar__logo">LOGO</div>
 
         <div class="sidebar__nav">
-          <p>ALL BOARDS</p>
+          <p class="sidebar__nav-heading">ALL BOARDS</p>
           <nav>
             <ul class="nav__boardlist">
 
@@ -95,10 +95,6 @@
         <label for="newboardtitle">Board Title:</label>
         <input type="text" name="newboardtitle" id="newboardtitle" placeholder="e.g. Take coffee break" value="">
       </div>
-
-  
-
-
       <input type="submit" value="Submit" class="subtasks-submit-btn btn" id="newBoardForm" >
     </form>
   </div>
@@ -128,9 +124,11 @@
                 
                 <div class="form__subtasks">
                     <label for="subtasks">Subtasks</label>
-                    <input type="text" name="subtasks" id="subtasks" placeholder="e.g. Make coffee">
-                    <button class="subtasks-btn btn">+Add New Subtask</button>
+                    <input type="text" name="subtasks" class="subtasks" placeholder="e.g. Take coffee break">
+                    
+                   
                 </div>
+                <button class="subtasks-btn btn">+Add new subtask</button>
 
                 <div class="form__status">
                     <label for="status">Status</label>
@@ -141,7 +139,7 @@
                     </select>
                 </div>
 
-                <button class="subtasks-submit-btn btn" type="submit">Create Task</button>
+                <button class="subtasks-submit-btn btn" type="submit" id="newTaskForm">Create Task</button>
             </form>
         </div>
     </div>
