@@ -1,6 +1,7 @@
 class Board {
-  constructor(title) {
+  constructor(title, categories = "") {
     this.title = title;
+    this.categories = categories;
   }
 
   _addCategories(...categories) {
@@ -21,10 +22,6 @@ class Board {
       }
     }
   }
-
-  logger() {
-    console.log(this);
-  }
 }
 
 class Task extends Board {
@@ -35,12 +32,6 @@ class Task extends Board {
     this.category = category;
   }
 }
-// This is dummy data that will be replaced with form data
-// const boardData = [];
-// const board = new Board("Board 1");
-// board._addCategories("todo", "doing", "done");
-// board._addTask("Task", "Description", [1, 2, 3], "todo");
-// boardData.push(board);
 
 const boardTitle = document.querySelector("h1");
 const sidebarListHeading = document.querySelector(".sidebar__nav-heading");
@@ -79,7 +70,6 @@ class App {
     // Add event listener to add tasks to boards;
     submitNewTaskForm.addEventListener("click", (e) => {
       this._createNewTask(e);
-      this._populateBoardTracks(e);
     });
     // Add event listener to add subtasks when creating a new task;
     newTaskFormSubtaskBtn.addEventListener("click", this._createNewSubtask);
@@ -134,8 +124,6 @@ class App {
   // Creates a new Task object from the task form modal
   _createNewTask(e) {
     e.preventDefault();
-
-    // boardData should refer to the values in localstorage
     this.#boards.forEach((board) => {
       if (boardTitle.innerText == board.title) {
         if (!board.categories) {
@@ -180,29 +168,6 @@ class App {
     boardTitle.classList.add("nav__board-item");
     boardList.append(boardTitle);
     sidebarListHeading.innerHTML = `<p>ALL BOARDS (${this.#boards.length})</p>`;
-
-    // if (this.#boards.length > 0) {
-    //   let boardTitle;
-    //   this.#boards.map((board) => {
-    //     boardTitle = document.createElement("li");
-    //     boardTitle.innerText = board.title;
-    //     boardTitle.classList.add("nav__board-item");
-    //   });
-    //   boardList.append(boardTitle);
-    //   ;
-    // }
-
-    // boardData will be replaced by the elements we have in localstorage
-    // if (boardData.length > 0) {
-    //   let boardTitle;
-    //   boardData.map((board) => {
-    //     boardTitle = document.createElement("li");
-    //     boardTitle.innerText = board.title;
-    //     boardTitle.classList.add("nav__board-item");
-    //   });
-    //   boardList.append(boardTitle);
-    //   sidebarListHeading.innerHTML = `<p>ALL BOARDS (${boardData.length})</p>`;
-    // }
   }
 
   // Populate the task tracks in the main section THIS FUNCTION NEEDS TO BE REWRITTEN
@@ -227,24 +192,6 @@ class App {
         }
       }
     });
-
-    //boardData should refer the localstorage data
-    // boardData.forEach((element) => {
-    //   if (element.title && element.title === target) {
-    //     boardTitle.innerText = element.title;
-    //     for (const key in element.categories) {
-    //       if (element.categories[key].length > 0) {
-    //         // Create Task Track
-    //         let track = this._createCategoryTracks(key);
-    //         //Append task cards to track here
-    //         element.categories[key].map((task) => {
-    //           track.append(this._createTaskCards(task));
-    //         });
-    //         taskBoard.append(track);
-    //       }
-    //     }
-    //   }
-    // });
   }
 
   _createCategoryTracks(key) {
@@ -275,7 +222,10 @@ class App {
   }
 
   _getFromLocalStorage() {
-    const data = JSON.parse(localStorage.getItem("boards"));
+    const data = JSON.parse(localStorage.getItem("boards")).map((board) => {
+      var newBoard = new Board(board.title, board.categories);
+      return newBoard;
+    });
 
     if (!data) return;
 
