@@ -15,12 +15,11 @@ class Board {
 
   _addTask(title, description, [...subtasks], category) {
     const task = new Task(title, description, [...subtasks], category);
-    // console.log(task);
-    // console.log("Task added");
-
     for (const key in this.categories) {
       if (task.category === key) {
+        console.log(this.categories[key]);
         this.categories[key].push(task);
+        console.log(this.categories);
       }
     }
   }
@@ -38,9 +37,12 @@ class Task extends Board {
     this.category = category;
   }
 }
-
 // This is dummy data that will be replaced with form data
 const boardData = [];
+// const board = new Board("Board 1");
+// board._addCategories("todo", "doing", "done");
+// board._addTask("Task", "Description", [1, 2, 3], "todo");
+// boardData.push(board);
 
 const boardTitle = document.querySelector("h1");
 const sidebarListHeading = document.querySelector(".sidebar__nav-heading");
@@ -68,19 +70,17 @@ const newTaskModalWindow = document.querySelector(".modal__window-new-bg");
 class App {
   constructor() {
     boardTitle.innerText === "" ?? newTaskBtn.setAttribute("disabled", "");
-
     // Populates sidebar with data pulled from localstorage;
     this._populateSidebar();
-
     // Add event listener to create a new board;
     submitNewBoardForm.addEventListener("click", (e) => {
       this._createNewBoard(e);
       this._populateSidebar();
     });
-
     // Add event listener to add tasks to boards;
     submitNewTaskForm.addEventListener("click", (e) => {
-      this._createNewTask(e);
+      let board = this._createNewTask(e);
+      this._saveToLocalStorage(board);
       this._populateBoardTracks(e);
     });
     // Add event listener to add subtasks when creating a new task;
@@ -132,27 +132,27 @@ class App {
   // Creates a new Task object from the task form modal
   _createNewTask(e) {
     e.preventDefault();
-
+    let newBoard;
     boardData.forEach((board) => {
       if (boardTitle.innerText == board.title) {
-        /*
-          This '_addCategories' call is only here for testing purposes. I need to think of how to get the categories
-          when the Board object is created.
-        */
-        const options = Array.from(document.querySelectorAll("option")).map(
-          (option) => option.value
-        );
-        board._addCategories(...options);
+        if (!board.categories) {
+          const options = Array.from(document.querySelectorAll("option")).map(
+            (option) => option.value.toLowerCase()
+          );
+          board._addCategories(...options);
+        }
 
         board._addTask(
           newTaskFormTitleInput.value,
           newTaskFormDescriptionInput.value,
           newTaskFormSubtasksInputs.map((input) => input.value),
-          newTaskFormStatusInput.value
+          newTaskFormStatusInput.value.toLowerCase()
         );
-        board.logger();
+        newBoard = board;
       }
     });
+
+    return newBoard;
   }
 
   // Creates a new subtasks to be added to the Task object
@@ -191,7 +191,7 @@ class App {
   _populateBoardTracks(e) {
     taskBoard.innerHTML = "";
     newTaskBtn.removeAttribute("disabled");
-    const target = e?.target.innerText;
+    const target = e.target.innerText;
     boardData.forEach((element) => {
       if (element.title && element.title === target) {
         boardTitle.innerText = element.title;
@@ -231,6 +231,15 @@ class App {
     cardBody.innerText = task.description;
     card.append(cardHeading, cardBody);
     return card;
+  }
+
+  _saveToLocalStorage(board) {
+    localStorage.setItem("boards", JSON.stringify(board));
+  }
+
+  _getFromLocalStorage() {
+    const items = localStorage.getItem("boards");
+    console.log(items);
   }
 }
 
