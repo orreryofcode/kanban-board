@@ -17,9 +17,7 @@ class Board {
     const task = new Task(title, description, [...subtasks], category);
     for (const key in this.categories) {
       if (task.category === key) {
-        console.log(this.categories[key]);
         this.categories[key].push(task);
-        console.log(this.categories);
       }
     }
   }
@@ -38,7 +36,7 @@ class Task extends Board {
   }
 }
 // This is dummy data that will be replaced with form data
-const boardData = [];
+// const boardData = [];
 // const board = new Board("Board 1");
 // board._addCategories("todo", "doing", "done");
 // board._addTask("Task", "Description", [1, 2, 3], "todo");
@@ -68,19 +66,19 @@ const newBoardModalWindow = document.querySelector(".modal__window-board");
 const newTaskModalWindow = document.querySelector(".modal__window-new-bg");
 
 class App {
+  #boards = [];
   constructor() {
+    this._getFromLocalStorage();
     boardTitle.innerText === "" ?? newTaskBtn.setAttribute("disabled", "");
     // Populates sidebar with data pulled from localstorage;
-    this._populateSidebar();
+    // this._populateSidebar();
     // Add event listener to create a new board;
     submitNewBoardForm.addEventListener("click", (e) => {
       this._createNewBoard(e);
-      this._populateSidebar();
     });
     // Add event listener to add tasks to boards;
     submitNewTaskForm.addEventListener("click", (e) => {
-      let board = this._createNewTask(e);
-      this._saveToLocalStorage(board);
+      this._createNewTask(e);
       this._populateBoardTracks(e);
     });
     // Add event listener to add subtasks when creating a new task;
@@ -124,16 +122,21 @@ class App {
   // Creates new Board object from form input
   _createNewBoard(e) {
     e.preventDefault();
+
     const newBoardTitle = newBoardFormTitleInput.value;
     const newBoard = new Board(newBoardTitle);
-    boardData.push(newBoard);
+    this.#boards.push(newBoard);
+    this._saveToLocalStorage();
+    this._populateSidebar(newBoard);
+    // Board needs to be saved to localStorage
   }
 
   // Creates a new Task object from the task form modal
   _createNewTask(e) {
     e.preventDefault();
-    let newBoard;
-    boardData.forEach((board) => {
+
+    // boardData should refer to the values in localstorage
+    this.#boards.forEach((board) => {
       if (boardTitle.innerText == board.title) {
         if (!board.categories) {
           const options = Array.from(document.querySelectorAll("option")).map(
@@ -148,11 +151,9 @@ class App {
           newTaskFormSubtasksInputs.map((input) => input.value),
           newTaskFormStatusInput.value.toLowerCase()
         );
-        newBoard = board;
       }
+      this._saveToLocalStorage();
     });
-
-    return newBoard;
   }
 
   // Creates a new subtasks to be added to the Task object
@@ -173,18 +174,35 @@ class App {
   }
 
   // Populate the list of boards in the sidebar
-  _populateSidebar() {
+  _populateSidebar(board) {
+    const boardTitle = document.createElement("li");
+    boardTitle.innerText = board.title;
+    boardTitle.classList.add("nav__board-item");
+    boardList.append(boardTitle);
+    sidebarListHeading.innerHTML = `<p>ALL BOARDS (${this.#boards.length})</p>`;
+
+    // if (this.#boards.length > 0) {
+    //   let boardTitle;
+    //   this.#boards.map((board) => {
+    //     boardTitle = document.createElement("li");
+    //     boardTitle.innerText = board.title;
+    //     boardTitle.classList.add("nav__board-item");
+    //   });
+    //   boardList.append(boardTitle);
+    //   ;
+    // }
+
     // boardData will be replaced by the elements we have in localstorage
-    if (boardData.length > 0) {
-      let boardTitle;
-      boardData.map((board) => {
-        boardTitle = document.createElement("li");
-        boardTitle.innerText = board.title;
-        boardTitle.classList.add("nav__board-item");
-      });
-      boardList.append(boardTitle);
-      sidebarListHeading.innerHTML = `<p>ALL BOARDS (${boardData.length})</p>`;
-    }
+    // if (boardData.length > 0) {
+    //   let boardTitle;
+    //   boardData.map((board) => {
+    //     boardTitle = document.createElement("li");
+    //     boardTitle.innerText = board.title;
+    //     boardTitle.classList.add("nav__board-item");
+    //   });
+    //   boardList.append(boardTitle);
+    //   sidebarListHeading.innerHTML = `<p>ALL BOARDS (${boardData.length})</p>`;
+    // }
   }
 
   // Populate the task tracks in the main section THIS FUNCTION NEEDS TO BE REWRITTEN
@@ -192,7 +210,8 @@ class App {
     taskBoard.innerHTML = "";
     newTaskBtn.removeAttribute("disabled");
     const target = e.target.innerText;
-    boardData.forEach((element) => {
+
+    this.#boards.forEach((element) => {
       if (element.title && element.title === target) {
         boardTitle.innerText = element.title;
         for (const key in element.categories) {
@@ -208,6 +227,24 @@ class App {
         }
       }
     });
+
+    //boardData should refer the localstorage data
+    // boardData.forEach((element) => {
+    //   if (element.title && element.title === target) {
+    //     boardTitle.innerText = element.title;
+    //     for (const key in element.categories) {
+    //       if (element.categories[key].length > 0) {
+    //         // Create Task Track
+    //         let track = this._createCategoryTracks(key);
+    //         //Append task cards to track here
+    //         element.categories[key].map((task) => {
+    //           track.append(this._createTaskCards(task));
+    //         });
+    //         taskBoard.append(track);
+    //       }
+    //     }
+    //   }
+    // });
   }
 
   _createCategoryTracks(key) {
@@ -233,13 +270,21 @@ class App {
     return card;
   }
 
-  _saveToLocalStorage(board) {
-    localStorage.setItem("boards", JSON.stringify(board));
+  _saveToLocalStorage() {
+    localStorage.setItem("boards", JSON.stringify(this.#boards));
   }
 
   _getFromLocalStorage() {
-    const items = localStorage.getItem("boards");
-    console.log(items);
+    const data = JSON.parse(localStorage.getItem("boards"));
+
+    if (!data) return;
+
+    this.#boards = data;
+
+    // console.log(this.#boards.length);
+    this.#boards.forEach((board) => {
+      this._populateSidebar(board);
+    });
   }
 }
 
