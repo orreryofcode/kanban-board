@@ -57,7 +57,7 @@ const newBoardModalWindow = document.querySelector(".modal__window-board");
 const newTaskModalWindow = document.querySelector(".modal__window-new-bg");
 
 class App {
-  #boards = [];
+  #boardsInStorage = [];
   #lastSelectedBoard;
 
   constructor() {
@@ -73,7 +73,10 @@ class App {
       this._createNewTask(e);
     });
     newTaskFormSubtaskBtn.addEventListener("click", this._createNewSubtask);
-    boardList.addEventListener("click", this._renderBoard.bind(this));
+    boardList.addEventListener(
+      "click",
+      this._renderSelectedBoardFromSideBar.bind(this)
+    );
     newBoardBtn.addEventListener("click", this._openModal);
     newTaskBtn.addEventListener("click", this._openModal);
     newTaskModalWindow.addEventListener("click", this._closeModal);
@@ -126,7 +129,7 @@ class App {
     e.preventDefault();
     const newBoardTitle = newBoardFormTitleInput.value;
     const newBoard = new Board(newBoardTitle);
-    this.#boards.push(newBoard);
+    this.#boardsInStorage.push(newBoard);
     this._saveBoardToLocalStorage();
     this.#lastSelectedBoard = newBoardTitle;
     this._saveLastSelectedBoardToLocalStorage();
@@ -138,7 +141,7 @@ class App {
   // Creates a new Task object from the task form modal
   _createNewTask(e) {
     e.preventDefault();
-    this.#boards.forEach((board) => {
+    this.#boardsInStorage.forEach((board) => {
       if (boardTitle.innerText == board.title) {
         if (!board.categories) {
           const options = Array.from(document.querySelectorAll("option")).map(
@@ -182,18 +185,20 @@ class App {
     boardTitle.innerText = board.title;
     boardTitle.classList.add("nav__board-item");
     boardList.append(boardTitle);
-    sidebarListHeading.innerHTML = `<p>ALL BOARDS (${this.#boards.length})</p>`;
+    sidebarListHeading.innerHTML = `<p>ALL BOARDS (${
+      this.#boardsInStorage.length
+    })</p>`;
   }
 
   _viewBoard(boardToView) {
     taskBoard.innerHTML = "";
-    this.#boards.forEach((boardFromStorage) => {
+    this.#boardsInStorage.forEach((boardFromStorage) => {
       if (boardFromStorage.title && boardFromStorage.title === boardToView) {
         boardTitle.innerText = boardFromStorage.title;
 
         for (const key in boardFromStorage.categories) {
           if (boardFromStorage.categories[key].length > 0) {
-            let categoryGroup = this._createCategoryTracks(key);
+            let categoryGroup = this._createCategoryGroups(key);
             boardFromStorage.categories[key].map((task) => {
               categoryGroup.append(this._createTaskCards(task));
             });
@@ -204,42 +209,41 @@ class App {
     });
   }
 
-  // Populate the task tracks in the main section THIS FUNCTION NEEDS TO BE REWRITTEN
-  _renderBoard(e) {
+  _renderSelectedBoardFromSideBar(e) {
     taskBoard.innerHTML = "";
     newTaskBtn.removeAttribute("disabled");
 
-    const target = e.target.innerText;
+    const selectedBoardToView = e.target.innerText;
     this.#lastSelectedBoard = e.target.innerText;
     this._saveLastSelectedBoardToLocalStorage();
-    this._viewBoard(target);
+    this._viewBoard(selectedBoardToView);
   }
 
-  _createCategoryTracks(key) {
-    const track = document.createElement("div");
+  _createCategoryGroups(key) {
+    const taskGroup = document.createElement("div");
     const category = document.createElement("div");
     const categoryHeading = document.createElement("h3");
-    track.classList.add("task__board-track");
+    taskGroup.classList.add("task__board-track");
     category.classList.add("task__board-heading");
     categoryHeading.innerText = key.toUpperCase();
     category.append(categoryHeading);
-    track.append(category);
-    return track;
+    taskGroup.append(category);
+    return taskGroup;
   }
 
   _createTaskCards(task) {
-    const card = document.createElement("div");
-    const cardHeading = document.createElement("h4");
-    const cardBody = document.createElement("p");
-    card.classList.add("task__board-card");
-    cardHeading.innerText = task.title;
-    cardBody.innerText = task.description;
-    card.append(cardHeading, cardBody);
-    return card;
+    const taskCard = document.createElement("div");
+    const taskCardHeading = document.createElement("h4");
+    const taskCardBody = document.createElement("p");
+    taskCard.classList.add("task__board-card");
+    taskCardHeading.innerText = task.title;
+    taskCardBody.innerText = task.description;
+    taskCard.append(taskCardHeading, taskCardBody);
+    return taskCard;
   }
 
   _saveBoardToLocalStorage() {
-    localStorage.setItem("boards", JSON.stringify(this.#boards));
+    localStorage.setItem("boards", JSON.stringify(this.#boardsInStorage));
   }
 
   _saveLastSelectedBoardToLocalStorage() {
@@ -247,9 +251,9 @@ class App {
   }
 
   _getBoardsFromLocalStorage() {
-    //The call to .map below re-instantiates the prototype of the boards from local storage
     const boardsFromLocalStorage = JSON.parse(
       localStorage.getItem("boards")
+      //The call to .map below re-instantiates the prototype of the boards from local storage
     ).map((board) => {
       var newBoard = new Board(board.title, board.categories);
       return newBoard;
@@ -257,9 +261,9 @@ class App {
 
     if (!boardsFromLocalStorage) return;
 
-    this.#boards = boardsFromLocalStorage;
+    this.#boardsInStorage = boardsFromLocalStorage;
 
-    this.#boards.forEach((board) => {
+    this.#boardsInStorage.forEach((board) => {
       this._populateSidebar(board);
     });
   }
@@ -273,3 +277,15 @@ class App {
 }
 
 const app = new App();
+
+/**
+ * ---- TODO ----
+ * 1. Finish styling of following:
+ *  a. Logo
+ *  b. Selected Task in Sidebar
+ *
+ * 2. Create task card detailed modal
+ * 3. Deletion of tasks + boards
+ * 4. Responsive design
+ *
+ */
