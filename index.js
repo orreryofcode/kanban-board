@@ -73,10 +73,19 @@ class App {
       this._createNewTask(e);
     });
     newTaskFormSubtaskBtn.addEventListener("click", this._createNewSubtask);
-    boardList.addEventListener(
-      "click",
-      this._renderSelectedBoardFromSideBar.bind(this)
-    );
+    boardList.addEventListener("click", (e) => {
+      let selected = e.target.innerText;
+      this._highlightSelectedBoardInSidebar(selected);
+      this._renderSelectedBoardFromSideBar(e);
+    });
+
+    boardList.addEventListener("keypress", (e) => {
+      let selected = e.target.innerText;
+      if (e.key === "Enter") {
+        this._highlightSelectedBoardInSidebar(selected);
+        this._renderSelectedBoardFromSideBar(e);
+      }
+    });
     newBoardBtn.addEventListener("click", this._openModal);
     newTaskBtn.addEventListener("click", this._openModal);
     newTaskModalWindow.addEventListener("click", this._closeModal);
@@ -94,6 +103,7 @@ class App {
     this._getBoardsFromLocalStorage();
     this._getLastSelectedBoardFromLocalStorage();
     this._viewBoard(this.#lastSelectedBoard);
+    this._highlightSelectedBoardInSidebar(this.#lastSelectedBoard);
   }
 
   _openModal(e) {
@@ -182,6 +192,7 @@ class App {
   // Populate the list of boards in the sidebar
   _populateSidebar(board) {
     const boardTitle = document.createElement("li");
+    boardTitle.tabIndex = 0;
     boardTitle.innerText = board.title;
     boardTitle.classList.add("nav__board-item");
     boardList.append(boardTitle);
@@ -217,6 +228,19 @@ class App {
     this.#lastSelectedBoard = e.target.innerText;
     this._saveLastSelectedBoardToLocalStorage();
     this._viewBoard(selectedBoardToView);
+  }
+
+  _highlightSelectedBoardInSidebar(selectedBoard) {
+    let boardListElements = Array.from(boardList.children);
+    console.log(selectedBoard);
+
+    boardListElements.forEach((child) => {
+      if (selectedBoard === child.innerText) {
+        child.classList.add("selected");
+      } else {
+        child.classList.remove("selected");
+      }
+    });
   }
 
   _createCategoryGroups(key) {
