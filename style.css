@@ -70,6 +70,10 @@ body {
   font-size: 1.6rem;
 }
 
+.heading__button-btn[disabled] {
+  background-color: var(--box-shadow-color);
+}
+
 /* SIDEBAR SECTION */
 .sidebar {
   background-color: #2c2c37;
@@ -102,6 +106,10 @@ nav > ul > li {
   padding: 1rem 2rem;
   padding-left: 0;
   margin-left: 5rem;
+}
+
+nav > ul > li:hover {
+  cursor: pointer;
 }
 
 .sidebar__button-btn {

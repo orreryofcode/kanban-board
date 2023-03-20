@@ -58,27 +58,39 @@ const newTaskModalWindow = document.querySelector(".modal__window-new-bg");
 
 class App {
   #boards = [];
+  #lastSelectedBoard;
+
   constructor() {
-    this._getFromLocalStorage();
     boardTitle.innerText === "" ?? newTaskBtn.setAttribute("disabled", "");
-    // Populates sidebar with data pulled from localstorage;
-    // this._populateSidebar();
-    // Add event listener to create a new board;
+
+    /**
+     * EVENT LISTENERS START
+     */
     submitNewBoardForm.addEventListener("click", (e) => {
       this._createNewBoard(e);
     });
-    // Add event listener to add tasks to boards;
     submitNewTaskForm.addEventListener("click", (e) => {
       this._createNewTask(e);
     });
-    // Add event listener to add subtasks when creating a new task;
     newTaskFormSubtaskBtn.addEventListener("click", this._createNewSubtask);
-    boardList.addEventListener("click", this._populateBoardTracks.bind(this));
-
+    boardList.addEventListener("click", this._renderBoard.bind(this));
     newBoardBtn.addEventListener("click", this._openModal);
     newTaskBtn.addEventListener("click", this._openModal);
     newTaskModalWindow.addEventListener("click", this._closeModal);
     newBoardModalWindow.addEventListener("click", this._closeModal);
+    // ---- EVENT LISTENERS END ----
+
+    /**
+     * INITIALIZATION START
+     */
+    this._init();
+    // ---- INITIALIZATION END
+  }
+
+  _init() {
+    this._getBoardsFromLocalStorage();
+    this._getLastSelectedBoardFromLocalStorage();
+    this._viewBoard(this.#lastSelectedBoard);
   }
 
   _openModal(e) {
@@ -112,12 +124,14 @@ class App {
   // Creates new Board object from form input
   _createNewBoard(e) {
     e.preventDefault();
-
     const newBoardTitle = newBoardFormTitleInput.value;
     const newBoard = new Board(newBoardTitle);
     this.#boards.push(newBoard);
-    this._saveToLocalStorage();
+    this._saveBoardToLocalStorage();
+    this.#lastSelectedBoard = newBoardTitle;
+    this._saveLastSelectedBoardToLocalStorage();
     this._populateSidebar(newBoard);
+    this._viewBoard(newBoardTitle);
     // Board needs to be saved to localStorage
   }
 
@@ -140,8 +154,9 @@ class App {
           newTaskFormStatusInput.value.toLowerCase()
         );
       }
-      this._saveToLocalStorage();
+      this._saveBoardToLocalStorage();
     });
+    location.reload();
   }
 
   // Creates a new subtasks to be added to the Task object
@@ -170,28 +185,34 @@ class App {
     sidebarListHeading.innerHTML = `<p>ALL BOARDS (${this.#boards.length})</p>`;
   }
 
-  // Populate the task tracks in the main section THIS FUNCTION NEEDS TO BE REWRITTEN
-  _populateBoardTracks(e) {
+  _viewBoard(boardToView) {
     taskBoard.innerHTML = "";
-    newTaskBtn.removeAttribute("disabled");
-    const target = e.target.innerText;
+    this.#boards.forEach((boardFromStorage) => {
+      if (boardFromStorage.title && boardFromStorage.title === boardToView) {
+        boardTitle.innerText = boardFromStorage.title;
 
-    this.#boards.forEach((element) => {
-      if (element.title && element.title === target) {
-        boardTitle.innerText = element.title;
-        for (const key in element.categories) {
-          if (element.categories[key].length > 0) {
-            // Create Task Track
-            let track = this._createCategoryTracks(key);
-            //Append task cards to track here
-            element.categories[key].map((task) => {
-              track.append(this._createTaskCards(task));
+        for (const key in boardFromStorage.categories) {
+          if (boardFromStorage.categories[key].length > 0) {
+            let categoryGroup = this._createCategoryTracks(key);
+            boardFromStorage.categories[key].map((task) => {
+              categoryGroup.append(this._createTaskCards(task));
             });
-            taskBoard.append(track);
+            taskBoard.append(categoryGroup);
           }
         }
       }
     });
+  }
+
+  // Populate the task tracks in the main section THIS FUNCTION NEEDS TO BE REWRITTEN
+  _renderBoard(e) {
+    taskBoard.innerHTML = "";
+    newTaskBtn.removeAttribute("disabled");
+
+    const target = e.target.innerText;
+    this.#lastSelectedBoard = e.target.innerText;
+    this._saveLastSelectedBoardToLocalStorage();
+    this._viewBoard(target);
   }
 
   _createCategoryTracks(key) {
@@ -217,24 +238,37 @@ class App {
     return card;
   }
 
-  _saveToLocalStorage() {
+  _saveBoardToLocalStorage() {
     localStorage.setItem("boards", JSON.stringify(this.#boards));
   }
 
-  _getFromLocalStorage() {
-    const data = JSON.parse(localStorage.getItem("boards")).map((board) => {
+  _saveLastSelectedBoardToLocalStorage() {
+    localStorage.setItem("lastViewedBoard", this.#lastSelectedBoard);
+  }
+
+  _getBoardsFromLocalStorage() {
+    //The call to .map below re-instantiates the prototype of the boards from local storage
+    const boardsFromLocalStorage = JSON.parse(
+      localStorage.getItem("boards")
+    ).map((board) => {
       var newBoard = new Board(board.title, board.categories);
       return newBoard;
     });
 
-    if (!data) return;
+    if (!boardsFromLocalStorage) return;
 
-    this.#boards = data;
+    this.#boards = boardsFromLocalStorage;
 
-    // console.log(this.#boards.length);
     this.#boards.forEach((board) => {
       this._populateSidebar(board);
     });
+  }
+
+  _getLastSelectedBoardFromLocalStorage() {
+    const lastViewedBoardFromStorage = localStorage.getItem("lastViewedBoard");
+    if (!lastViewedBoardFromStorage) return;
+
+    this.#lastSelectedBoard = lastViewedBoardFromStorage;
   }
 }
 
