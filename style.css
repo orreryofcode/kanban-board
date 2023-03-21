@@ -30,6 +30,7 @@ body {
   color: var(--font-primary);
   font-family: arial;
   font-size: 1.6rem;
+  line-height: 1.6;
 }
 
 .btn {
@@ -44,8 +45,8 @@ body {
 
 .container {
   display: grid;
-  grid-template-columns: minmax(20rem, 15%) 1fr;
-  grid-template-rows: 9rem 1fr;
+  grid-template-columns: minmax(10rem, 15%) 1fr;
+  grid-template-rows: 10rem 1fr;
   height: 100vh;
 }
 
@@ -54,7 +55,6 @@ body {
   background-color: #2c2c37;
   border: 1px solid #45464e;
   padding: 2rem;
-
   display: flex;
   justify-content: space-between;
 }
@@ -62,7 +62,12 @@ body {
 .heading__title {
   display: flex;
   align-items: center;
-  /* font-size: 1.6rem; */
+  font-size: 2.4rem;
+}
+
+.heading__button {
+  display: flex;
+  align-items: center;
 }
 
 .heading__button-btn {
@@ -96,7 +101,7 @@ body {
 }
 
 .side__logo-img {
-  width: 20rem;
+  width: 25rem;
 }
 
 .sidebar__nav {
@@ -147,8 +152,9 @@ nav > ul > li:hover {
 .task__board {
   background-color: var(--bg-color-dark);
   display: flex;
-  gap: 5rem;
+  gap: 2rem;
   padding: 2rem;
+  overflow: scroll;
 }
 
 .task__board-track {
@@ -179,27 +185,33 @@ nav > ul > li:hover {
 .task__board-card {
   background-color: #2c2c37;
   color: white;
-  padding: 1rem;
+  padding: 2rem;
   border-radius: 10px;
-  box-shadow: 0px 5px 4px var(--box-shadow-color);
+  transition: 0.2s all;
 }
 
 .task__board-card > h4 {
-  font-size: 2rem;
+  font-size: 2.4rem;
 }
 
 .task__board-card > p {
   color: #828494;
-  /* font-size: 1.6rem; */
+  font-size: 2rem;
+}
+
+.task__board-card:hover {
+  cursor: pointer;
+  transform: translateX(4px);
+  box-shadow: -4px 0px 0px var(--highlight-purple-light);
 }
 
 /* MODALS */
 
 .modal__window-new-bg,
-.modal__window-board {
+.modal__window-board,
+.modal__window-view {
   display: flex;
   position: absolute;
-
   justify-content: center;
   align-items: center;
   z-index: 1;
@@ -208,14 +220,15 @@ nav > ul > li:hover {
   height: 100%;
 }
 
-.modal__task-new {
+.modal__task-new,
+.modal__task-view {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   background-color: var(--main-bg-color);
   z-index: 11;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 3rem 2rem;
   width: 25%;
   min-width: 50rem;
   border-radius: 0.5rem;
@@ -237,7 +250,24 @@ nav > ul > li:hover {
 }
 
 .modal__task-heading {
-  font-size: 2rem;
+  font-size: 3rem;
+}
+
+.modal__task-description {
+  color: #828494;
+  font-size: 1.6rem;
+  margin: 2rem 0;
+}
+.modal__task-subtasks {
+  width: 100%;
+}
+.subtask-group {
+  background-color: var(--bg-color-dark);
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 6px;
+}
+.modal__task-status {
 }
 
 form {

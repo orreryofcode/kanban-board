@@ -55,6 +55,7 @@ const newTaskFormStatusInput = document.querySelector("#status");
 
 const newBoardModalWindow = document.querySelector(".modal__window-board");
 const newTaskModalWindow = document.querySelector(".modal__window-new-bg");
+const viewTaskModalWindow = document.querySelector(".modal__window-view");
 
 class App {
   #boardsInStorage = [];
@@ -90,6 +91,7 @@ class App {
     newTaskBtn.addEventListener("click", this._openModal);
     newTaskModalWindow.addEventListener("click", this._closeModal);
     newBoardModalWindow.addEventListener("click", this._closeModal);
+    viewTaskModalWindow.addEventListener("click", this._closeTaskViewModal);
     // ---- EVENT LISTENERS END ----
 
     /**
@@ -106,6 +108,7 @@ class App {
     this._highlightSelectedBoardInSidebar(this.#lastSelectedBoard);
   }
 
+  //TODO: openModal and closeModal should be broken up into separate functions for each modal in the program
   _openModal(e) {
     if (e.target.id === "newBoardBtn") {
       if (newBoardModalWindow.classList.contains("hidemodal")) {
@@ -134,7 +137,6 @@ class App {
     }
   }
 
-  // Creates new Board object from form input
   _createNewBoard(e) {
     e.preventDefault();
     const newBoardTitle = newBoardFormTitleInput.value;
@@ -145,10 +147,8 @@ class App {
     this._saveLastSelectedBoardToLocalStorage();
     this._populateSidebar(newBoard);
     this._viewBoard(newBoardTitle);
-    // Board needs to be saved to localStorage
   }
 
-  // Creates a new Task object from the task form modal
   _createNewTask(e) {
     e.preventDefault();
     this.#boardsInStorage.forEach((board) => {
@@ -172,12 +172,10 @@ class App {
     location.reload();
   }
 
-  // Creates a new subtasks to be added to the Task object
   _createNewSubtask(e) {
     e.preventDefault();
     const newSubtask = document.createElement("input");
     newSubtask.classList.add("subtasks");
-    // Add attributes to subtask input
     Object.assign(newSubtask, {
       type: "text",
       name: "subtasks",
@@ -189,7 +187,6 @@ class App {
     newTaskFormSubtasksInputs.push(newSubtask);
   }
 
-  // Populate the list of boards in the sidebar
   _populateSidebar(board) {
     const boardTitle = document.createElement("li");
     boardTitle.tabIndex = 0;
@@ -201,6 +198,7 @@ class App {
     })</p>`;
   }
 
+  //This function needs to be broken up. There is a forEach, a for in and a map here.
   _viewBoard(boardToView) {
     taskBoard.innerHTML = "";
     this.#boardsInStorage.forEach((boardFromStorage) => {
@@ -232,7 +230,6 @@ class App {
 
   _highlightSelectedBoardInSidebar(selectedBoard) {
     let boardListElements = Array.from(boardList.children);
-    console.log(selectedBoard);
 
     boardListElements.forEach((child) => {
       if (selectedBoard === child.innerText) {
@@ -261,9 +258,87 @@ class App {
     const taskCardBody = document.createElement("p");
     taskCard.classList.add("task__board-card");
     taskCardHeading.innerText = task.title;
-    taskCardBody.innerText = task.description;
+    taskCardBody.innerText = task.description.substring(0, 30) + "...";
     taskCard.append(taskCardHeading, taskCardBody);
+    taskCard.addEventListener("click", (e) => {
+      let clickedTaskCard = e.target.closest("div");
+      this._taskCardClickHandler(clickedTaskCard);
+    });
     return taskCard;
+  }
+
+  _taskCardClickHandler(clickedTaskCard) {
+    let clickedTaskTitle = clickedTaskCard.children[0].innerText;
+    let clickedTask;
+    const [currentBoard] = this.#boardsInStorage.filter(
+      (boardFromStorage) => boardFromStorage.title === this.#lastSelectedBoard
+    );
+
+    clickedTask = this._findSelectedTaskInBoards(
+      currentBoard,
+      clickedTaskTitle
+    );
+
+    this._createTaskModal(clickedTask);
+    this._openTaskViewModal();
+  }
+
+  _findSelectedTaskInBoards(currentBoard, clickedTaskTitle) {
+    const currentBoardCategories = currentBoard.categories;
+    let foundTask;
+    for (const key in currentBoardCategories) {
+      currentBoardCategories[key].forEach((category) => {
+        if (category.title === clickedTaskTitle) {
+          foundTask = category;
+        }
+      });
+    }
+
+    return foundTask;
+  }
+
+  _createTaskModal(task) {
+    viewTaskModalWindow.innerHTML = `
+    <div class="modal__task-view">
+    <h5 class="modal__task-heading">${task.title}</h5>
+    <div class="modal__task-description">
+      <p>${task.description}</p>
+    </div>
+
+    <div class="modal__task-subtasks">
+      <p>Subtasks (2 of 3)</p>
+      <div class="subtask-group">                  
+        <input type="checkbox" id="subtask-1" title="subtask-1">
+        <label for="subtask-1">Subtask 1</label>
+      </div>
+      <div class="subtask-group">                  
+        <input type="checkbox" id="subtask-1" title="subtask-1">
+        <label for="subtask-1">Subtask 1</label>
+      </div>
+      <div class="subtask-group">                  
+        <input type="checkbox" id="subtask-1" title="subtask-1">
+        <label for="subtask-1">Subtask 1</label>
+      </div>
+      
+      <div class="modal__task-status">
+        ${task.category}
+      </div>
+      
+    </div>
+  </div>
+`;
+  }
+
+  _openTaskViewModal() {
+    if (viewTaskModalWindow.classList.contains("hidemodal")) {
+      viewTaskModalWindow.classList.remove("hidemodal");
+    }
+  }
+
+  _closeTaskViewModal(e) {
+    if (e.target === viewTaskModalWindow) {
+      viewTaskModalWindow.classList.add("hidemodal");
+    }
   }
 
   _saveBoardToLocalStorage() {
@@ -305,10 +380,9 @@ const app = new App();
 /**
  * ---- TODO ----
  * 1. Finish styling of following:
- *  a. Logo
- *  b. Selected Task in Sidebar
+ *  a. New Board Modal
  *
- * 2. Create task card detailed modal
+ * 2. Create task card modal
  * 3. Deletion of tasks + boards
  * 4. Responsive design
  *

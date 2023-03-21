@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
     <title>Kanban Board</title>
+    <link rel="icon" type="image/x-icon" href="logo_small.svg">
   </head>
   <body>
     <div class="container">
@@ -21,7 +22,11 @@
 
       <!-- SIDEBAR -->
       <div class="sidebar">
-        <div class="sidebar__logo"><img src="/logo.svg" alt="Kanban Logo" class="side__logo-img"></div>
+        <div class="sidebar__logo">
+          <img 
+          src="/logo_full.svg" 
+          alt="Kanban Logo" class="side__logo-img">
+        </div>
 
         <div class="sidebar__nav">
           <p class="sidebar__nav-heading">ALL BOARDS</p>
@@ -32,6 +37,9 @@
           </nav>
           <button class="sidebar__button-btn btn" id="newBoardBtn">+ Create New Board</button>
         </div>
+
+     
+ 
       </div>
 
       <!-- MAIN BOARD -->
@@ -44,11 +52,14 @@
 
 <div class="modal__window-board hidemodal">
   <div class="modal__task-new">
-    <h5>NEW BOARD</h5>
+    <div class="modal__task-heading">
+      <h5>Create a new board</h5>
+    </div>
+ 
 
     <form action="/" >
       <div class="form__title">
-        <label for="newboardtitle">Board Title:</label>
+
         <input type="text" name="newboardtitle" id="newboardtitle" placeholder="e.g. Take coffee break" value="">
       </div>
       <input type="submit" value="Submit" class="subtasks-submit-btn btn" id="newBoardForm" >
@@ -70,17 +81,17 @@
             <form action="#">
                 <div class="form__title">
                     <label for="title">Title</label>
-                    <input type="text" name="title" id="title" placeholder="e.g. Take coffee break">
+                    <input type="text" name="title" id="title" placeholder="e.g. Take coffee break" >
                 </div>
                
                 <div class="form__description">
                     <label for="description">Description</label>
-                    <textarea name="description" id="description" cols="30" rows="10" placeholder="e.g. It's always good to take a break. This 15 minute break will recharge the batteries a little."></textarea>
+                    <textarea name="description" id="description" cols="30" rows="10" placeholder="e.g. It's always good to take a break. This 15 minute break will recharge the batteries a little." ></textarea>
                 </div>
                 
                 <div class="form__subtasks">
                     <label for="subtasks">Subtasks</label>
-                    <input type="text" name="subtasks" class="subtasks" placeholder="e.g. Take coffee break">
+                    <input type="text" name="subtasks" class="subtasks" placeholder="e.g. Take coffee break" >
                     
                    
                 </div>
@@ -103,11 +114,39 @@
 
 
 
-        <!-- VIEW TASK MODAL
-        <div class="modal__window-view">
-            
+        <!-- VIEW TASK MODAL -->
+        <div class="modal__window-view hidemodal">
+            <!-- <div class="modal__task-view">
+              <h5 class="modal__task-heading">TASK HEADING</h5>
+              <div class="modal__task-description">
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Adipisci sed quibusdam amet fuga quidem nesciunt magni mollitia eveniet debitis, ipsam ipsum assumenda dolore ullam accusantium nihil doloremque, fugit doloribus numquam.</p>
+              </div>
 
-        </div> -->
+              <div class="modal__task-subtasks">
+                <p>Subtasks (2 of 3)</p>
+                <div class="subtask-group">                  
+                  <input type="checkbox" id="subtask-1" title="subtask-1">
+                  <label for="subtask-1">Subtask 1</label>
+                </div>
+                <div class="subtask-group">                  
+                  <input type="checkbox" id="subtask-1" title="subtask-1">
+                  <label for="subtask-1">Subtask 1</label>
+                </div>
+                <div class="subtask-group">                  
+                  <input type="checkbox" id="subtask-1" title="subtask-1">
+                  <label for="subtask-1">Subtask 1</label>
+                </div>
+                
+                <div class="modal__task-status">
+                  Doing
+                </div>
+                
+              </div>
+            </div> -->
+
+           
+
+        </div> 
         
         <script src="./index.js"></script>
   </body>
