@@ -258,7 +258,10 @@ class App {
     const taskCardBody = document.createElement("p");
     taskCard.classList.add("task__board-card");
     taskCardHeading.innerText = task.title;
-    taskCardBody.innerText = task.description.substring(0, 30) + "...";
+    taskCardBody.innerText =
+      task.description.length > 30
+        ? task.description.substring(0, 30) + "..."
+        : task.description;
     taskCard.append(taskCardHeading, taskCardBody);
     taskCard.addEventListener("click", (e) => {
       let clickedTaskCard = e.target.closest("div");
