@@ -262,12 +262,12 @@ class App {
     taskCard.append(taskCardHeading, taskCardBody);
     taskCard.addEventListener("click", (e) => {
       let clickedTaskCard = e.target.closest("div");
-      this._taskCardClickHandler(clickedTaskCard);
+      this._viewTaskCard(clickedTaskCard);
     });
     return taskCard;
   }
 
-  _taskCardClickHandler(clickedTaskCard) {
+  _viewTaskCard(clickedTaskCard) {
     let clickedTaskTitle = clickedTaskCard.children[0].innerText;
     let clickedTask;
     const [currentBoard] = this.#boardsInStorage.filter(
@@ -280,7 +280,15 @@ class App {
     );
 
     this._createTaskModal(clickedTask);
+    this._appendCheckboxEventListener();
     this._openTaskViewModal();
+  }
+
+  _appendCheckboxEventListener() {
+    const subtaskCheckboxes = document.querySelectorAll(".subtask__checkbox");
+    subtaskCheckboxes.forEach((checkbox) => {
+      checkbox.addEventListener("click", this._subtaskCheckboxStrikethrough);
+    });
   }
 
   _findSelectedTaskInBoards(currentBoard, clickedTaskTitle) {
@@ -297,7 +305,30 @@ class App {
     return foundTask;
   }
 
+  // This is a monster that needs to be rewritten but it works for now
   _createTaskModal(task) {
+    let subtasks;
+    if (task.subtasks.length > 0) {
+      subtasks = task.subtasks.map((subtask) => {
+        const group = document.createElement("div");
+        group.classList.add("subtask-group");
+        const checkbox = document.createElement("input");
+        Object.assign(checkbox, {
+          type: "checkbox",
+          id: `subtask-${task.subtasks.indexOf(subtask) + 1}`,
+          title: `subtask-${task.subtasks.indexOf(subtask) + 1}`,
+        });
+        checkbox.classList.add("subtask__checkbox");
+        const label = document.createElement("label");
+        Object.assign(label, {
+          for: `subtask-${task.subtasks.indexOf(subtask) + 1}`,
+          innerText: subtask,
+        });
+        group.append(checkbox, label);
+        return group;
+      });
+    }
+
     viewTaskModalWindow.innerHTML = `
     <div class="modal__task-view">
     <h5 class="modal__task-heading">${task.title}</h5>
@@ -306,27 +337,31 @@ class App {
     </div>
 
     <div class="modal__task-subtasks">
-      <p>Subtasks (2 of 3)</p>
-      <div class="subtask-group">                  
-        <input type="checkbox" id="subtask-1" title="subtask-1">
-        <label for="subtask-1">Subtask 1</label>
-      </div>
-      <div class="subtask-group">                  
-        <input type="checkbox" id="subtask-1" title="subtask-1">
-        <label for="subtask-1">Subtask 1</label>
-      </div>
-      <div class="subtask-group">                  
-        <input type="checkbox" id="subtask-1" title="subtask-1">
-        <label for="subtask-1">Subtask 1</label>
-      </div>
-      
-      <div class="modal__task-status">
-        ${task.category}
-      </div>
-      
+    <p>Subtasks (${task.subtasks.length})</p>
+
+    <div class="modal__task-status">
+    ${task.category}
     </div>
-  </div>
+
+    </div>
+   </div>
 `;
+
+    const subtaskContainer = document.querySelector(".modal__task-status");
+    subtasks.forEach((subtask) => {
+      subtaskContainer.prepend(subtask);
+    });
+  }
+
+  _subtaskCheckboxStrikethrough(e) {
+    console.log("check");
+    const checkbox = e.target;
+    const checkboxLabel = e.target.nextElementSibling;
+    if (checkbox.checked) {
+      checkboxLabel.classList.add("subtask_strikethrough");
+    } else {
+      checkboxLabel.classList.remove("subtask_strikethrough");
+    }
   }
 
   _openTaskViewModal() {
@@ -380,10 +415,8 @@ const app = new App();
 /**
  * ---- TODO ----
  * 1. Finish styling of following:
- *  a. New Board Modal
- *
- * 2. Create task card modal
- * 3. Deletion of tasks + boards
- * 4. Responsive design
- *
+ *    a. View Task Modal
+ * 2. Deletion of tasks + boards
+ * 3. Responsive design
+ 
  */

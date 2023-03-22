@@ -45,7 +45,7 @@ body {
 
 .container {
   display: grid;
-  grid-template-columns: minmax(10rem, 15%) 1fr;
+  grid-template-columns: minmax(10rem, 20%) 1fr;
   grid-template-rows: 10rem 1fr;
   height: 100vh;
 }
@@ -267,7 +267,16 @@ nav > ul > li:hover {
   padding: 1rem;
   border-radius: 6px;
 }
+
+.subtask-group label {
+  margin-left: 1rem;
+}
 .modal__task-status {
+}
+
+.subtask_strikethrough {
+  text-decoration: line-through;
+  color: var(--bg-color-light);
 }
 
 form {
