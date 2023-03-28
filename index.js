@@ -56,6 +56,7 @@ const newTaskFormStatusInput = document.querySelector("#status");
 const newBoardModalWindow = document.querySelector(".modal__window-board");
 const newTaskModalWindow = document.querySelector(".modal__window-new-bg");
 const viewTaskModalWindow = document.querySelector(".modal__window-view");
+const deleteBoardBtn = document.querySelector(".heading__button-del");
 
 class App {
   #boardsInStorage = [];
@@ -92,6 +93,7 @@ class App {
     newTaskModalWindow.addEventListener("click", this._closeModal);
     newBoardModalWindow.addEventListener("click", this._closeModal);
     viewTaskModalWindow.addEventListener("click", this._closeTaskViewModal);
+    deleteBoardBtn.addEventListener("click", this._deleteBoard.bind(this));
 
     // ---- EVENT LISTENERS END ----
 
@@ -392,6 +394,16 @@ class App {
     window.location.reload();
   }
 
+  _deleteBoard() {
+    const newBoards = this.#boardsInStorage.filter(
+      (board) => board.title !== this.#lastSelectedBoard
+    );
+
+    this.#boardsInStorage = newBoards;
+    this._saveBoardToLocalStorage();
+    window.location.reload();
+  }
+
   _subtaskCheckboxStrikethrough(e) {
     console.log("check");
     const checkbox = e.target;
@@ -455,7 +467,6 @@ const app = new App();
  * ---- TODO ----
  * 1. Finish styling of following:
  *    a. View Task Modal
- * 2. Deletion of tasks + boards
  * 3. Responsive design
  
  */
