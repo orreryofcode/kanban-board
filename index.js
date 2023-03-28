@@ -400,7 +400,9 @@ class App {
     );
 
     this.#boardsInStorage = newBoards;
+    this.#lastSelectedBoard = "";
     this._saveBoardToLocalStorage();
+    this._saveLastSelectedBoardToLocalStorage();
     window.location.reload();
   }
 
