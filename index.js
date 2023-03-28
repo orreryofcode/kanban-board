@@ -92,6 +92,7 @@ class App {
     newTaskModalWindow.addEventListener("click", this._closeModal);
     newBoardModalWindow.addEventListener("click", this._closeModal);
     viewTaskModalWindow.addEventListener("click", this._closeTaskViewModal);
+
     // ---- EVENT LISTENERS END ----
 
     /**
@@ -311,6 +312,7 @@ class App {
   // This is a monster that needs to be rewritten but it works for now
   _createTaskModal(task) {
     let subtasks;
+
     if (task.subtasks.length > 0) {
       subtasks = task.subtasks.map((subtask) => {
         const group = document.createElement("div");
@@ -334,6 +336,7 @@ class App {
 
     viewTaskModalWindow.innerHTML = `
     <div class="modal__task-view">
+    <button class="modal__task-delete">Delete Task</button>
     <h5 class="modal__task-heading">${task.title}</h5>
     <div class="modal__task-description">
       <p>${task.description}</p>
@@ -341,19 +344,52 @@ class App {
 
     <div class="modal__task-subtasks">
     <p>Subtasks (${task.subtasks.length})</p>
+    </div>
 
     <div class="modal__task-status">
     ${task.category}
     </div>
 
-    </div>
-   </div>
-`;
+    
+   </div>`;
 
-    const subtaskContainer = document.querySelector(".modal__task-status");
+    const subtaskContainer = document.querySelector(".modal__task-subtasks");
     subtasks.forEach((subtask) => {
-      subtaskContainer.prepend(subtask);
+      subtaskContainer.append(subtask);
     });
+
+    const deleteTaskBtn = document.querySelector(".modal__task-delete");
+    this._appendDeleteTaskBtn(deleteTaskBtn);
+  }
+
+  _appendDeleteTaskBtn(deleteTaskBtn) {
+    deleteTaskBtn.addEventListener("click", this._deleteTask.bind(this));
+  }
+
+  _deleteTask(e) {
+    const taskTitle = e.target.nextElementSibling.innerText;
+    const taskCategory = e.target.parentElement.children[4].innerText;
+
+    const currentBoard = this.#boardsInStorage.filter(
+      (board) => board.title === this.#lastSelectedBoard
+    );
+
+    let targetCategory;
+
+    for (const key in currentBoard[0].categories) {
+      if (key === taskCategory) {
+        targetCategory = currentBoard[0].categories[key];
+      }
+    }
+
+    targetCategory.forEach((task) => {
+      if (task.title === taskTitle) {
+        targetCategory.splice(targetCategory.indexOf(task), 1);
+      }
+    });
+
+    this._saveBoardToLocalStorage();
+    window.location.reload();
   }
 
   _subtaskCheckboxStrikethrough(e) {
